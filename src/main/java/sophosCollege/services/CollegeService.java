@@ -20,9 +20,9 @@ public class CollegeService {
 		
 		try {
 
-			String consulta = "INSERT INTO `college` (`name`,`nit`,`city`,`country`) VALUES (?,?,?,?)";
+			String query = "INSERT INTO `college` (`name`,`nit`,`city`,`country`) VALUES (?,?,?,?)";
 			
-			statement = conn.prepareStatement(consulta);
+			statement = conn.prepareStatement(query);
 			statement.setString(1, college.getName());
 			statement.setLong(2, college.getNit());
 			statement.setString(3, college.getCity());
@@ -40,19 +40,51 @@ public class CollegeService {
 		return result;
 		
 	}
-	
+
+	public static ArrayList<Course> getAllCourses(int nit) {
+		connection connection = new connection();
+		Connection conn =  connection.getConnection();
+		PreparedStatement statement = null;
+		ResultSet result = null;
+		ArrayList<Course> courses = new ArrayList<Course>();
+		try {
+
+			String query = "SELECT* FROM `course` WHERE collegeid = ? AND active = TRUE";
+			statement = conn.prepareStatement(query);
+			statement.setInt(1, nit);
+			result = statement.executeQuery();
+			while (result.next()) {
+				Course course = new Course();
+				course.setId(result.getInt("id"));
+				course.setName(result.getString("name"));
+				course.setPrerequisite(result.getInt("prerequisite"));
+				course.setAvailableSpaces(result.getInt("availableSpaces"));
+				course.setAvailableSpaces(result.getInt("idTeacher"));
+				course.setActive(result.getBoolean("active"));
+				courses.add(course);
+		}
+		
+		connection.desconectar();
+		return courses;
+		
+		} catch (SQLException e) {
+			System.out.println("Error to get courses: "+e.getMessage());
+		}
+		return courses;
+	}
+
 	public static ArrayList<Teacher> getAllTeachers(int nit) {
 		connection connection = new connection();
 		Connection conn =  connection.getConnection();
 			PreparedStatement statement = null;
 			ResultSet result = null;
-			ArrayList<Teacher> teachers = new ArrayList<Teacher>();;
+			ArrayList<Teacher> teachers = new ArrayList<Teacher>();
 		
 		try {
 
-			String consulta = "SELECT * FROM `teacher` WHERE collegeid = ? AND active = TRUE";
+			String query = "SELECT * FROM `teacher` WHERE collegeid = ? AND active = TRUE";
 			
-			statement = conn.prepareStatement(consulta);
+			statement = conn.prepareStatement(query);
 			statement.setInt(1, nit);
 			result = statement.executeQuery();
 			while (result.next()) {
@@ -84,13 +116,13 @@ public class CollegeService {
 		Connection conn =  connection.getConnection();
 			PreparedStatement statement = null;
 			ResultSet result = null;
-			ArrayList<Student> students = new ArrayList<Student>();;
+			ArrayList<Student> students = new ArrayList<Student>();
 		
 		try {
 
-			String consulta = "SELECT * FROM `student` WHERE collegeid = ? AND active = TRUE";
+			String query = "SELECT * FROM `student` WHERE collegeid = ? AND active = TRUE";
 			
-			statement = conn.prepareStatement(consulta);
+			statement = conn.prepareStatement(query);
 			statement.setInt(1, nit);
 			result = statement.executeQuery();
 			while (result.next()) {
@@ -116,38 +148,40 @@ public class CollegeService {
 		return students;
 	}
 	
-	public static ArrayList<Course> getAllCourses(int nit) {
+	public static String addNewCourse(Course course, int collegeId) {
 		connection connection = new connection();
 		Connection conn =  connection.getConnection();
 		PreparedStatement statement = null;
-		ResultSet result = null;
-		ArrayList<Course> courses = new ArrayList<Course>();;
+		String result = "";
+		
 		try {
 
-			String consulta = "SELECT* FROM `course` WHERE collegeid = ? AND active = TRUE";
-			statement = conn.prepareStatement(consulta);
-			statement.setInt(1, nit);
-			result = statement.executeQuery();
-			while (result.next()) {
-				Course course = new Course();
-				course.setId(result.getInt("id"));
-				course.setName(result.getString("name"));
-				course.setPrerequisite(result.getInt("prerequisite"));
-				course.setAvailableSpaces(result.getInt("availableSpaces"));
-				course.setAvailableSpaces(result.getInt("idTeacher"));
-				course.setActive(result.getBoolean("active"));
-				courses.add(course);
-		}
-		
-		connection.desconectar();
-		return courses;
-		
+			String query = "INSERT INTO `course` "
+					+ "(`id`,`name`,`prerequisite`,`nCredits`,`availableSpaces`,`idTeacher`,`active`,`collegeId`) "
+					+ "VALUES (?,?,?,?,?,?,?,?)";
+			
+			statement = conn.prepareStatement(query);
+			statement.setInt(1, course.getId());
+			statement.setString(2, course.getName());
+			statement.setInt(3, course.getPrerequisite());
+			statement.setInt(4, course.getnCredits());
+			statement.setInt(5, course.getAvailableSpaces());
+			statement.setInt(6, course.getIdTeacher());
+			statement.setBoolean(7, course.isActive());
+			statement.setInt(8, collegeId);
+			statement.execute();
+			
+			result = "Registro Exitoso!!!";
+			
+			connection.desconectar();
+			
 		} catch (SQLException e) {
-			System.out.println("Error to get courses: "+e.getMessage());
+			System.out.println("Error to create course: "+e.getMessage());
 		}
-		return courses;
+		
+		return result;
 	}
-
+	
 	public static String addNewTeacher(Teacher teacher, int collegeId) {
 		connection connection = new connection();
 		Connection conn =  connection.getConnection();
@@ -156,11 +190,11 @@ public class CollegeService {
 		
 		try {
 
-			String consulta = "INSERT INTO `teacher` "
+			String query = "INSERT INTO `teacher` "
 					+ "(`cc`,`name`,`email`,`cellphone`,`address`,`degree`,`yearsOfExperience`,`active`,`collegeid`) "
 					+ "VALUES (?,?,?,?,?,?,?,?,?)";
 			
-			statement = conn.prepareStatement(consulta);
+			statement = conn.prepareStatement(query);
 			statement.setInt(1, teacher.getCc());
 			statement.setString(2, teacher.getName());
 			statement.setString(3, teacher.getEmail());
@@ -177,6 +211,7 @@ public class CollegeService {
 			connection.desconectar();
 			
 		} catch (SQLException e) {
+			System.out.println("Error to create teacher: "+e.getMessage());
 		}
 		
 		return result;
@@ -190,11 +225,11 @@ public class CollegeService {
 		
 		try {
 
-			String consulta = "INSERT INTO `student` "
+			String query = "INSERT INTO `student` "
 					+ "(`cc`,`name`,`email`,`cellphone`,`address`,`semester`,`creditsNumber`,`active`,`collegeid`) "
 					+ "VALUES (?,?,?,?,?,?,?,?,?)";
 			
-			statement = conn.prepareStatement(consulta);
+			statement = conn.prepareStatement(query);
 			statement.setInt(1, student.getCc());
 			statement.setString(2, student.getName());
 			statement.setString(3, student.getEmail());
@@ -216,63 +251,175 @@ public class CollegeService {
 		
 		return result;
 	}
-	
-	public static String addNewCourse(Course course, int collegeId) {
+
+	public static Course findCourse(int nit, int id) {
 		connection connection = new connection();
 		Connection conn =  connection.getConnection();
 		PreparedStatement statement = null;
-		String result = "";
+		ResultSet result = null;
+		Course course = new Course();
 		
 		try {
 
-			String consulta = "INSERT INTO `course` "
-					+ "(`id`,`name`,`prerequisite`,`nCredits`,`availableSpaces`,`idTeacher`,`active`,`collegeId`) "
-					+ "VALUES (?,?,?,?,?,?,?,?,?)";
+			String query = "SELECT * FROM `course` WHERE collegeid = ? AND id = ? AND ACTIVE = TRUE";
 			
-			statement = conn.prepareStatement(consulta);
-			statement.setInt(1, course.getId());
-			statement.setString(2, course.getName());
-			statement.setInt(3, course.getPrerequisite());
-			statement.setInt(4, course.getnCredits());
-			statement.setInt(5, course.getAvailableSpaces());
-			statement.setInt(6, course.getIdTeacher());
-			statement.setBoolean(7, course.isActive());
-			statement.setInt(9, collegeId);
-			statement.execute();
-			
-			result = "Registro Exitoso!!!";
-			
-			connection.desconectar();
+			statement = conn.prepareStatement(query);
+			statement.setInt(1, nit);
+			statement.setInt(2,id);
+			result = statement.executeQuery();
+			course.setId(result.getInt("id"));
+			course.setName(result.getString("name"));
+			course.setPrerequisite(result.getInt("prerequisite"));
+			course.setAvailableSpaces(result.getInt("availableSpaces"));
+			course.setAvailableSpaces(result.getInt("idTeacher"));
+			course.setActive(result.getBoolean("active"));
+
 			
 		} catch (SQLException e) {
-			System.out.println("Error to create course: "+e.getMessage());
+			System.out.println("Error finding course: "+e.getMessage());
+		}
+		
+		return course;	
+	}
+
+	public static Teacher findTeacher(int nit, int cc) {
+		connection connection = new connection();
+		Connection conn =  connection.getConnection();
+		PreparedStatement statement = null;
+		ResultSet result = null;
+		Teacher teacher = new Teacher();
+		
+		try {
+
+			String query = "SELECT * FROM `teacher` WHERE collegeid = ? AND cc = ? AND ACTIVE = TRUE";
+			
+			statement = conn.prepareStatement(query);
+			statement.setInt(1, nit);
+			statement.setInt(2,cc);
+			result = statement.executeQuery();
+			teacher.setCc(result.getInt("cc"));
+			teacher.setName(result.getString("name"));
+			teacher.setEmail(result.getString("email"));
+			teacher.setCellphone(result.getInt("cellphone"));
+			teacher.setAddress(result.getString("address"));
+			teacher.setDegree(result.getString("degree"));
+			teacher.setYearsOfExperience(result.getInt("yearsOfExperience"));
+			teacher.setActive(result.getBoolean("active"));
+			
+		} catch (SQLException e) {
+			System.out.println("Error finding teacher: "+e.getMessage());
+		}
+		
+		return teacher;		
+	}
+
+	public static Student findStudent(int nit, int cc) {
+		connection connection = new connection();
+		Connection conn =  connection.getConnection();
+		PreparedStatement statement = null;
+		ResultSet result = null;
+		Student student = new Student();
+		
+		try {
+
+			String query = "SELECT * FROM `student` WHERE collegeid = ? AND cc = ? AND ACTIVE = TRUE";
+			
+			statement = conn.prepareStatement(query);
+			statement.setInt(1, nit);
+			statement.setInt(2,cc);
+			result = statement.executeQuery();
+			student.setCc(result.getInt("cc"));
+			student.setName(result.getString("name"));
+			student.setEmail(result.getString("email"));
+			student.setCellphone(result.getInt("cellphone"));
+			student.setAddress(result.getString("address"));
+			student.setSemester(result.getInt("semeter"));
+			student.setCreditsNumber(result.getInt("creditsNumber"));
+			student.setActive(result.getBoolean("active"));
+
+			
+		} catch (SQLException e) {
+			System.out.println("Error finding student: "+e.getMessage());
+		}
+		
+		return student;	
+		
+	}
+
+	public static String deleteCourse(int nit, int id) {
+		connection connection = new connection();
+		Connection conn =  connection.getConnection();
+			PreparedStatement statement = null;
+			String result = "";
+		
+		try {
+
+			String query = "UPDATE `course` SET ACTIVE=? WHERE collegeid = ? AND id = ?";
+			
+			statement = conn.prepareStatement(query);
+			statement.setBoolean(1, false);
+			statement.setInt(2, nit);
+			statement.setInt(3,id);
+			statement.execute();
+			
+			result = "Course with ID: '"+id+"' is desactivated!";
+			
+		} catch (SQLException e) {
+			System.out.println("Error desactivating course: "+e.getMessage());
+		}
+		
+		return result;
+		
+	}
+
+	public static String deleteTeacher(int nit, int cc) {
+		connection connection = new connection();
+		Connection conn =  connection.getConnection();
+			PreparedStatement statement = null;
+			String result = "";
+		
+		try {
+
+			String query = "UPDATE `teacher` SET ACTIVE=? WHERE collegeid = ? AND cc = ?";
+			
+			statement = conn.prepareStatement(query);
+			statement.setBoolean(1, false);
+			statement.setInt(2, nit);
+			statement.setInt(3,cc);
+			statement.execute();
+			
+			result = "Teacher with ID: '"+cc+"' is desactivated!";
+			
+		} catch (SQLException e) {
+			System.out.println("Error desactivating teacher: "+e.getMessage());
+		}
+		
+		return result;		
+	}
+
+	public static String deleteStudent(int nit, int cc) {
+		connection connection = new connection();
+		Connection conn =  connection.getConnection();
+			PreparedStatement statement = null;
+			String result = "";
+		
+		try {
+
+			String query = "UPDATE `student` SET ACTIVE=? WHERE collegeid = ? AND cc = ?";
+			
+			statement = conn.prepareStatement(query);
+			statement.setBoolean(1, false);
+			statement.setInt(2, nit);
+			statement.setInt(3,cc);
+			statement.execute();
+			
+			result = "Student with ID: '"+cc+"' is desactivated!";
+			
+		} catch (SQLException e) {
+			System.out.println("Error desactivating student: "+e.getMessage());
 		}
 		
 		return result;
 	}
 	
-//	private void findTeacher() {
-//		
-//	}
-//
-//	private void findStudent() {
-//		
-//	}
-//	
-//	private void findCourse() {
-//		
-//	}
-//
-//	private void DeleteTeacher() {
-//		
-//	}
-//
-//	private void DeleteStudent() {
-//		
-//	}
-//	
-//	private void DeleteCourse() {
-//		
-//	}
-
 }
