@@ -41,7 +41,7 @@ public class CollegeService {
 		
 	}
 
-	public static ArrayList<Course> getAllCourses(int nit) {
+	public static ArrayList<Course> getAllCourses(long nit) {
 		connection connection = new connection();
 		Connection conn =  connection.getConnection();
 		PreparedStatement statement = null;
@@ -49,9 +49,9 @@ public class CollegeService {
 		ArrayList<Course> courses = new ArrayList<Course>();
 		try {
 
-			String query = "SELECT* FROM `course` WHERE collegeid = ? AND active = TRUE";
+			String query = "SELECT* FROM `course` WHERE collegeId = ? AND active = TRUE";
 			statement = conn.prepareStatement(query);
-			statement.setInt(1, nit);
+			statement.setLong(1, nit);
 			result = statement.executeQuery();
 			while (result.next()) {
 				Course course = new Course();
@@ -73,7 +73,7 @@ public class CollegeService {
 		return courses;
 	}
 
-	public static ArrayList<Teacher> getAllTeachers(int nit) {
+	public static ArrayList<Teacher> getAllTeachers(long nit) {
 		connection connection = new connection();
 		Connection conn =  connection.getConnection();
 			PreparedStatement statement = null;
@@ -82,17 +82,17 @@ public class CollegeService {
 		
 		try {
 
-			String query = "SELECT * FROM `teacher` WHERE collegeid = ? AND active = TRUE";
+			String query = "SELECT * FROM `teacher` WHERE collegeId = ? AND active = TRUE";
 			
 			statement = conn.prepareStatement(query);
-			statement.setInt(1, nit);
+			statement.setLong(1, nit);
 			result = statement.executeQuery();
 			while (result.next()) {
 				Teacher teacher = new Teacher();
 				teacher.setCc(result.getInt("cc"));
 				teacher.setName(result.getString("name"));
 				teacher.setEmail(result.getString("email"));
-				teacher.setCellphone(result.getInt("cellphone"));
+				teacher.setCellphone(result.getLong("cellphone"));
 				teacher.setAddress(result.getString("address"));
 				teacher.setDegree(result.getString("degree"));
 				teacher.setYearsOfExperience(result.getInt("yearsOfExperience"));
@@ -111,7 +111,7 @@ public class CollegeService {
 		
 	}
 	
-	public static ArrayList<Student> getAllStudents(int nit) {
+	public static ArrayList<Student> getAllStudents(long nit) {
 		connection connection = new connection();
 		Connection conn =  connection.getConnection();
 			PreparedStatement statement = null;
@@ -120,20 +120,21 @@ public class CollegeService {
 		
 		try {
 
-			String query = "SELECT * FROM `student` WHERE collegeid = ? AND active = TRUE";
+			String query = "SELECT * FROM `student` WHERE collegeId = ? AND active = TRUE";
 			
 			statement = conn.prepareStatement(query);
-			statement.setInt(1, nit);
+			statement.setLong(1, nit);
 			result = statement.executeQuery();
 			while (result.next()) {
 				Student student = new Student();
-				student.setCc(result.getInt("cc"));
+				student.setCc(result.getLong("cc"));
 				student.setName(result.getString("name"));
 				student.setEmail(result.getString("email"));
-				student.setCellphone(result.getInt("cellphone"));
+				student.setCellphone(result.getLong("cellphone"));
 				student.setAddress(result.getString("address"));
-				student.setSemester(result.getInt("semeter"));
+				student.setSemester(result.getInt("semester"));
 				student.setCreditsNumber(result.getInt("creditsNumber"));
+				student.setFaculty(result.getString("faculty"));
 				student.setActive(result.getBoolean("active"));
 				students.add(student);
 			}
@@ -148,7 +149,7 @@ public class CollegeService {
 		return students;
 	}
 	
-	public static String addNewCourse(Course course, int collegeId) {
+	public static String addNewCourse(Course course, long collegeId) {
 		connection connection = new connection();
 		Connection conn =  connection.getConnection();
 		PreparedStatement statement = null;
@@ -167,8 +168,8 @@ public class CollegeService {
 			statement.setInt(4, course.getnCredits());
 			statement.setInt(5, course.getAvailableSpaces());
 			statement.setInt(6, course.getIdTeacher());
-			statement.setBoolean(7, course.isActive());
-			statement.setInt(8, collegeId);
+			statement.setBoolean(7, course.getActive());
+			statement.setLong(8, collegeId);
 			statement.execute();
 			
 			result = "Registro Exitoso!!!";
@@ -182,7 +183,7 @@ public class CollegeService {
 		return result;
 	}
 	
-	public static String addNewTeacher(Teacher teacher, int collegeId) {
+	public static String addNewTeacher(Teacher teacher, long collegeId) {
 		connection connection = new connection();
 		Connection conn =  connection.getConnection();
 		PreparedStatement statement = null;
@@ -191,19 +192,19 @@ public class CollegeService {
 		try {
 
 			String query = "INSERT INTO `teacher` "
-					+ "(`cc`,`name`,`email`,`cellphone`,`address`,`degree`,`yearsOfExperience`,`active`,`collegeid`) "
+					+ "(`cc`,`name`,`email`,`cellphone`,`address`,`degree`,`yearsOfExperience`,`active`,`collegeId`) "
 					+ "VALUES (?,?,?,?,?,?,?,?,?)";
 			
 			statement = conn.prepareStatement(query);
-			statement.setInt(1, teacher.getCc());
+			statement.setLong(1, teacher.getCc());
 			statement.setString(2, teacher.getName());
 			statement.setString(3, teacher.getEmail());
-			statement.setInt(4, teacher.getCellphone());
+			statement.setLong(4, teacher.getCellphone());
 			statement.setString(5, teacher.getAddress());
 			statement.setString(6, teacher.getDegree());
 			statement.setInt(7, teacher.getYearsOfExperience());
-			statement.setBoolean(8, teacher.isActive());
-			statement.setInt(9, collegeId);
+			statement.setBoolean(8, teacher.getActive());
+			statement.setLong(9, collegeId);
 			statement.execute();
 			
 			result = "Registro Exitoso!!!";
@@ -217,7 +218,7 @@ public class CollegeService {
 		return result;
 	}
 
-	public static String addNewStudent(Student student, int collegeId) {
+	public static String addNewStudent(Student student, long collegeId) {
 		connection connection = new connection();
 		Connection conn =  connection.getConnection();
 		PreparedStatement statement = null;
@@ -226,19 +227,20 @@ public class CollegeService {
 		try {
 
 			String query = "INSERT INTO `student` "
-					+ "(`cc`,`name`,`email`,`cellphone`,`address`,`semester`,`creditsNumber`,`active`,`collegeid`) "
-					+ "VALUES (?,?,?,?,?,?,?,?,?)";
+					+ "(`cc`,`name`,`email`,`cellphone`,`address`,`semester`,`creditsNumber`,`active`,`collegeId`,`faculty`) "
+					+ "VALUES (?,?,?,?,?,?,?,?,?,?)";
 			
 			statement = conn.prepareStatement(query);
-			statement.setInt(1, student.getCc());
+			statement.setLong(1, student.getCc());
 			statement.setString(2, student.getName());
 			statement.setString(3, student.getEmail());
-			statement.setInt(4, student.getCellphone());
+			statement.setLong(4, student.getCellphone());
 			statement.setString(5, student.getAddress());
 			statement.setInt(6, student.getSemester());
 			statement.setInt(7, student.getCreditsNumber());
-			statement.setBoolean(8, student.isActive());
-			statement.setInt(9, collegeId);
+			statement.setBoolean(8, student.getActive());
+			statement.setLong(9, collegeId);
+			statement.setString(10, student.getFaculty());
 			statement.execute();
 			
 			result = "Registro Exitoso!!!";
@@ -252,7 +254,7 @@ public class CollegeService {
 		return result;
 	}
 
-	public static Course findCourse(int nit, int id) {
+	public static Course findCourse(long nit, int id) {
 		connection connection = new connection();
 		Connection conn =  connection.getConnection();
 		PreparedStatement statement = null;
@@ -261,10 +263,10 @@ public class CollegeService {
 		
 		try {
 
-			String query = "SELECT * FROM `course` WHERE collegeid = ? AND id = ? AND ACTIVE = TRUE";
+			String query = "SELECT * FROM `course` WHERE collegeId = ? AND id = ? AND active = TRUE";
 			
 			statement = conn.prepareStatement(query);
-			statement.setInt(1, nit);
+			statement.setLong(1, nit);
 			statement.setInt(2,id);
 			result = statement.executeQuery();
 			course.setId(result.getInt("id"));
@@ -281,8 +283,72 @@ public class CollegeService {
 		
 		return course;	
 	}
+	
+	public static Course findCourseByName(long nit, String name) {
+		connection connection = new connection();
+		Connection conn =  connection.getConnection();
+		PreparedStatement statement = null;
+		ResultSet result = null;
+		Course course = new Course();
+		
+		try {
 
-	public static Teacher findTeacher(int nit, int cc) {
+			String query = "SELECT * FROM `course` WHERE collegeId = ? AND name = ? AND active = TRUE";
+			
+			statement = conn.prepareStatement(query);
+			statement.setLong(1, nit);
+			statement.setString(2,name);
+			result = statement.executeQuery();
+			course.setId(result.getInt("id"));
+			course.setName(result.getString("name"));
+			course.setPrerequisite(result.getInt("prerequisite"));
+			course.setAvailableSpaces(result.getInt("availableSpaces"));
+			course.setAvailableSpaces(result.getInt("idTeacher"));
+			course.setActive(result.getBoolean("active"));
+
+			
+		} catch (SQLException e) {
+			System.out.println("Error finding course named "+name+": "+e.getMessage());
+		}
+		
+		return course;	
+	}
+	
+	public static ArrayList<Course> findCourseBySpace(long nit) {
+		connection connection = new connection();
+		Connection conn =  connection.getConnection();
+		PreparedStatement statement = null;
+		ResultSet result = null;
+		ArrayList<Course> courses = new ArrayList<Course>();
+		
+		try {
+
+			String query = "SELECT * FROM `course` WHERE collegeId = ? AND active = TRUE AND availableSpaces>0";
+			
+			statement = conn.prepareStatement(query);
+			statement.setLong(1, nit);
+			result = statement.executeQuery();
+			while (result.next()) {
+				Course course = new Course();
+				course.setId(result.getInt("id"));
+				course.setName(result.getString("name"));
+				course.setPrerequisite(result.getInt("prerequisite"));
+				course.setAvailableSpaces(result.getInt("availableSpaces"));
+				course.setAvailableSpaces(result.getInt("idTeacher"));
+				course.setActive(result.getBoolean("active"));
+				courses.add(course);
+		}
+		
+		connection.desconectar();
+		return courses;
+		
+		} catch (SQLException e) {
+			System.out.println("Error to get courses with available spaces: "+e.getMessage());
+		}
+		return courses;
+	}
+
+	public static Teacher findTeacher(long nit, long cc) {
 		connection connection = new connection();
 		Connection conn =  connection.getConnection();
 		PreparedStatement statement = null;
@@ -291,11 +357,11 @@ public class CollegeService {
 		
 		try {
 
-			String query = "SELECT * FROM `teacher` WHERE collegeid = ? AND cc = ? AND ACTIVE = TRUE";
+			String query = "SELECT * FROM `teacher` WHERE collegeId = ? AND cc = ? AND active = TRUE";
 			
 			statement = conn.prepareStatement(query);
-			statement.setInt(1, nit);
-			statement.setInt(2,cc);
+			statement.setLong(1, nit);
+			statement.setLong(2,cc);
 			result = statement.executeQuery();
 			teacher.setCc(result.getInt("cc"));
 			teacher.setName(result.getString("name"));
@@ -312,8 +378,39 @@ public class CollegeService {
 		
 		return teacher;		
 	}
+	
+	public static Teacher findTeacherByName(long nit, String name) {
+		connection connection = new connection();
+		Connection conn =  connection.getConnection();
+		PreparedStatement statement = null;
+		ResultSet result = null;
+		Teacher teacher = new Teacher();
+		
+		try {
 
-	public static Student findStudent(int nit, int cc) {
+			String query = "SELECT * FROM `teacher` WHERE collegeId = ? AND name = ? AND active = TRUE";
+			
+			statement = conn.prepareStatement(query);
+			statement.setLong(1, nit);
+			statement.setString(2, name);
+			result = statement.executeQuery();
+			teacher.setCc(result.getInt("cc"));
+			teacher.setName(result.getString("name"));
+			teacher.setEmail(result.getString("email"));
+			teacher.setCellphone(result.getInt("cellphone"));
+			teacher.setAddress(result.getString("address"));
+			teacher.setDegree(result.getString("degree"));
+			teacher.setYearsOfExperience(result.getInt("yearsOfExperience"));
+			teacher.setActive(result.getBoolean("active"));
+			
+		} catch (SQLException e) {
+			System.out.println("Error finding teacher named "+name+": "+e.getMessage());
+		}
+		
+		return teacher;		
+	}
+
+	public static Student findStudent(long nit, long cc) {
 		connection connection = new connection();
 		Connection conn =  connection.getConnection();
 		PreparedStatement statement = null;
@@ -322,21 +419,22 @@ public class CollegeService {
 		
 		try {
 
-			String query = "SELECT * FROM `student` WHERE collegeid = ? AND cc = ? AND ACTIVE = TRUE";
+			String query = "SELECT * FROM `student` WHERE collegeId = ? AND cc = ? AND active= TRUE";
 			
 			statement = conn.prepareStatement(query);
-			statement.setInt(1, nit);
-			statement.setInt(2,cc);
+			statement.setLong(1, nit);
+			statement.setLong(2,cc);
 			result = statement.executeQuery();
-			student.setCc(result.getInt("cc"));
+			result.next();
+			student.setCc(result.getLong("cc"));
 			student.setName(result.getString("name"));
 			student.setEmail(result.getString("email"));
-			student.setCellphone(result.getInt("cellphone"));
+			student.setCellphone(result.getLong("cellphone"));
 			student.setAddress(result.getString("address"));
-			student.setSemester(result.getInt("semeter"));
+			student.setSemester(result.getInt("semester"));
 			student.setCreditsNumber(result.getInt("creditsNumber"));
+			student.setFaculty(result.getString("faculty"));
 			student.setActive(result.getBoolean("active"));
-
 			
 		} catch (SQLException e) {
 			System.out.println("Error finding student: "+e.getMessage());
@@ -346,7 +444,80 @@ public class CollegeService {
 		
 	}
 
-	public static String deleteCourse(int nit, int id) {
+	public static Student findStudentByName(long nit, String name) {
+		connection connection = new connection();
+		Connection conn =  connection.getConnection();
+		PreparedStatement statement = null;
+		ResultSet result = null;
+		Student student = new Student();
+		
+		try {
+
+			String query = "SELECT * FROM `student` WHERE collegeId = ? AND name = ? AND active= TRUE";
+			
+			statement = conn.prepareStatement(query);
+			statement.setLong(1, nit);
+			statement.setString(2,name);
+			result = statement.executeQuery();
+			result.next();
+			student.setCc(result.getLong("cc"));
+			student.setName(result.getString("name"));
+			student.setEmail(result.getString("email"));
+			student.setCellphone(result.getLong("cellphone"));
+			student.setAddress(result.getString("address"));
+			student.setSemester(result.getInt("semester"));
+			student.setCreditsNumber(result.getInt("creditsNumber"));
+			student.setFaculty(result.getString("faculty"));
+			student.setActive(result.getBoolean("active"));
+			
+		} catch (SQLException e) {
+			System.out.println("Error finding student named "+name+": "+e.getMessage());
+		}
+		
+		return student;	
+		
+	}
+	
+	public static ArrayList<Student> findStudentsByFaculty(long nit, String faculty) {
+		connection connection = new connection();
+		Connection conn =  connection.getConnection();
+			PreparedStatement statement = null;
+			ResultSet result = null;
+			ArrayList<Student> students = new ArrayList<Student>();
+		
+		try {
+
+			String query = "SELECT * FROM `student` WHERE collegeId = ? AND faculty=? AND active = TRUE";
+			
+			statement = conn.prepareStatement(query);
+			statement.setLong(1, nit);
+			statement.setString(2, faculty);
+			result = statement.executeQuery();
+			while (result.next()) {
+				Student student = new Student();
+				student.setCc(result.getLong("cc"));
+				student.setName(result.getString("name"));
+				student.setEmail(result.getString("email"));
+				student.setCellphone(result.getLong("cellphone"));
+				student.setAddress(result.getString("address"));
+				student.setSemester(result.getInt("semester"));
+				student.setCreditsNumber(result.getInt("creditsNumber"));
+				student.setFaculty(result.getString("faculty"));
+				student.setActive(result.getBoolean("active"));
+				students.add(student);
+			}
+			
+			connection.desconectar();
+			return students;
+			
+		} catch (SQLException e) {
+			System.out.println("Error to get students with "+faculty+" faculty: "+e.getMessage());
+		}
+		
+		return students;
+	}
+	
+	public static String deleteCourse(long nit, int id) {
 		connection connection = new connection();
 		Connection conn =  connection.getConnection();
 			PreparedStatement statement = null;
@@ -354,11 +525,11 @@ public class CollegeService {
 		
 		try {
 
-			String query = "UPDATE `course` SET ACTIVE=? WHERE collegeid = ? AND id = ?";
+			String query = "UPDATE `course` SET active=? WHERE collegeId = ? AND id = ?";
 			
 			statement = conn.prepareStatement(query);
 			statement.setBoolean(1, false);
-			statement.setInt(2, nit);
+			statement.setLong(2, nit);
 			statement.setInt(3,id);
 			statement.execute();
 			
@@ -372,7 +543,7 @@ public class CollegeService {
 		
 	}
 
-	public static String deleteTeacher(int nit, int cc) {
+	public static String deleteTeacher(long nit, long cc) {
 		connection connection = new connection();
 		Connection conn =  connection.getConnection();
 			PreparedStatement statement = null;
@@ -380,12 +551,12 @@ public class CollegeService {
 		
 		try {
 
-			String query = "UPDATE `teacher` SET ACTIVE=? WHERE collegeid = ? AND cc = ?";
+			String query = "UPDATE `teacher` SET active=? WHERE collegeId = ? AND cc = ?";
 			
 			statement = conn.prepareStatement(query);
 			statement.setBoolean(1, false);
-			statement.setInt(2, nit);
-			statement.setInt(3,cc);
+			statement.setLong(2, nit);
+			statement.setLong(3,cc);
 			statement.execute();
 			
 			result = "Teacher with ID: '"+cc+"' is desactivated!";
@@ -397,7 +568,7 @@ public class CollegeService {
 		return result;		
 	}
 
-	public static String deleteStudent(int nit, int cc) {
+	public static String deleteStudent(long nit, long cc) {
 		connection connection = new connection();
 		Connection conn =  connection.getConnection();
 			PreparedStatement statement = null;
@@ -405,12 +576,12 @@ public class CollegeService {
 		
 		try {
 
-			String query = "UPDATE `student` SET ACTIVE=? WHERE collegeid = ? AND cc = ?";
+			String query = "UPDATE `student` SET active=? WHERE collegeid = ? AND cc = ?";
 			
 			statement = conn.prepareStatement(query);
 			statement.setBoolean(1, false);
-			statement.setInt(2, nit);
-			statement.setInt(3,cc);
+			statement.setLong(2, nit);
+			statement.setLong(3,cc);
 			statement.execute();
 			
 			result = "Student with ID: '"+cc+"' is desactivated!";

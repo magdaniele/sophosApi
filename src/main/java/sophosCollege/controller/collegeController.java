@@ -40,42 +40,67 @@ public class collegeController {
 	}
 	
 
-	@RequestMapping(value="/{nit}/course/getAll", method = RequestMethod.GET)
+	@RequestMapping(value="/{nit}/course/all", method = RequestMethod.GET)
 	public ResponseEntity<ArrayList<Course>> getCourses(@PathVariable int nit){
 		return ResponseEntity.ok(CollegeService.getAllCourses(nit));
 	}
-
-	@RequestMapping(value="/{nit}/teacher/getAll", method = RequestMethod.GET)
+	
+	@RequestMapping(value="/{nit}/course/availablecourses", method = RequestMethod.GET)
+	public ResponseEntity<ArrayList<Course>> getCoursesWithSpace(@PathVariable int nit){
+		return ResponseEntity.ok(CollegeService.findCourseBySpace(nit));
+	}
+	
+	@RequestMapping(value="/{nit}/teacher/all", method = RequestMethod.GET)
 	public ResponseEntity<ArrayList<Teacher>> getTeachers(@PathVariable int nit){
 		return ResponseEntity.ok(CollegeService.getAllTeachers(nit));
 	}
 
-	@RequestMapping(value="/{nit}/student/getAll", method = RequestMethod.GET)
+	@RequestMapping(value="/{nit}/student/all", method = RequestMethod.GET)
 	public ResponseEntity<ArrayList<Student>> getStudents(@PathVariable int nit){
 		return ResponseEntity.ok(CollegeService.getAllStudents(nit));
 	}
 
-	@RequestMapping(value="/{nit}/course/{id}", method = RequestMethod.GET)
+	@RequestMapping(value="/{nit}/course/id", method = RequestMethod.GET)
 	public ResponseEntity<Course> getCourse(@PathVariable int nit, @RequestParam int id){
 		return ResponseEntity.ok(CollegeService.findCourse(nit, id));
 	}
-
-	@RequestMapping(value="/{nit}/teacher/{cc}", method = RequestMethod.GET)
+	
+	@RequestMapping(value="/{nit}/course/name", method = RequestMethod.GET)
+	public ResponseEntity<Course> getCourseByName(@PathVariable int nit, @RequestParam String name){
+		return ResponseEntity.ok(CollegeService.findCourseByName(nit, name));
+	}
+	
+	@RequestMapping(value="/{nit}/teacher/cc", method = RequestMethod.GET)
 	public ResponseEntity<Teacher> getTeacher(@PathVariable int nit, @RequestParam int cc){
 		return ResponseEntity.ok(CollegeService.findTeacher(nit,cc));
 	}
-
-	@RequestMapping(value="/{nit}/student/{cc}", method = RequestMethod.GET)
+	
+	@RequestMapping(value="/{nit}/teacher/name", method = RequestMethod.GET)
+	public ResponseEntity<Teacher> getTeacherByName(@PathVariable int nit, @RequestParam String name){
+		return ResponseEntity.ok(CollegeService.findTeacherByName(nit,name));
+	}
+	
+	@RequestMapping(value="/{nit}/student/cc", method = RequestMethod.GET)
 	public ResponseEntity<Student> getStudent(@PathVariable int nit, @RequestParam int cc){
 		return ResponseEntity.ok(CollegeService.findStudent(nit,cc));
 	}
 
-	@RequestMapping(value="/{nit}/course/{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value="/{nit}/student/name", method = RequestMethod.GET)
+	public ResponseEntity<Student> getStudentByName(@PathVariable int nit, @RequestParam String name){
+		return ResponseEntity.ok(CollegeService.findStudentByName(nit,name));
+	}
+	
+	@RequestMapping(value="/{nit}/student/faculty", method = RequestMethod.GET)
+	public ResponseEntity<ArrayList<Student>> getStudentByFaculty(@PathVariable int nit, @RequestParam String faculty){
+		return ResponseEntity.ok(CollegeService.findStudentsByFaculty(nit,faculty));
+	}
+
+	@RequestMapping(value="/{nit}/course/", method = RequestMethod.DELETE)
 	public ResponseEntity<String> deleteCourse(@PathVariable int nit, @RequestParam int id){
 		return ResponseEntity.ok(CollegeService.deleteCourse(nit,id));
 	}
 
-	@RequestMapping(value="/{nit}/teacher/{cc}", method = RequestMethod.DELETE)
+	@RequestMapping(value="/{nit}/teacher/", method = RequestMethod.DELETE)
 	public ResponseEntity<String> deleteTeacher(@PathVariable int nit, @RequestParam int cc){
 		return ResponseEntity.ok(CollegeService.deleteTeacher(nit,cc));
 	}

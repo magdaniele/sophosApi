@@ -74,7 +74,7 @@ public class Course {
 		this.availableSpaces = availableSpaces;
 	}
 
-	public boolean isActive() {
+	public boolean getActive() {
 		return active;
 	}
 

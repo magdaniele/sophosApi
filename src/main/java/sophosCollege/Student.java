@@ -1,25 +1,24 @@
 package sophosCollege;
 
 public class Student {
-	private int cc;
+	private long cc;
 	private String name;
 	private String email;
-	private int cellphone;
+	private long cellphone;
 	private String address;
 	private int creditsNumber;
 	private int semester;
-	private boolean isActive;
-	private Course[] currentCourses;
-	private Course[] coursesAttended;
+	private String faculty;
+	private boolean active;
 
 	public Student() {
 	}
 
-	public int getCc() {
+	public long getCc() {
 		return cc;
 	}
 
-	public void setCc(int cc) {
+	public void setCc(long cc) {
 		this.cc = cc;
 	}
 
@@ -39,11 +38,11 @@ public class Student {
 		this.email = email;
 	}
 
-	public int getCellphone() {
+	public long getCellphone() {
 		return cellphone;
 	}
 
-	public void setCellphone(int cellphone) {
+	public void setCellphone(long cellphone) {
 		this.cellphone = cellphone;
 	}
 
@@ -70,21 +69,21 @@ public class Student {
 	public void setSemester(int semester) {
 		this.semester = semester;
 	}
-
-	public boolean isActive() {
-		return isActive;
+	
+	public String getFaculty() {
+		return faculty;
 	}
 
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
+	public void setFaculty(String faculty) {
+		this.faculty = faculty;
 	}
 
-	public Course[] getCurrentCourses() {
-		return currentCourses;
+	public boolean getActive() {
+		return active;
 	}
 
-	public Course[] getCoursesAttended() {
-		return coursesAttended;
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 	
 }
