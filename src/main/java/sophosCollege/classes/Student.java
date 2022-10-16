@@ -1,4 +1,6 @@
-package sophosCollege;
+package sophosCollege.classes;
+
+import java.util.ArrayList;
 
 public class Student {
 	private long cc;
@@ -10,6 +12,8 @@ public class Student {
 	private int semester;
 	private String faculty;
 	private boolean active;
+	private ArrayList<Course> currentCourses;
+	private ArrayList<Course> coursesGiven;
 
 	public Student() {
 	}
@@ -85,5 +89,22 @@ public class Student {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
+
+	public ArrayList<Course> getCurrentCourses() {
+		return currentCourses;
+	}
+
+	public void setCurrentCourses(ArrayList<Course> currentCourses) {
+		this.currentCourses = currentCourses;
+	}
+
+	public ArrayList<Course> getCoursesGiven() {
+		return coursesGiven;
+	}
+
+	public void setCoursesGiven(ArrayList<Course> coursesGiven) {
+		this.coursesGiven = coursesGiven;
+	}
+	
 	
 }

@@ -1,4 +1,6 @@
-package sophosCollege;
+package sophosCollege.classes;
+
+import java.util.ArrayList;
 
 public class Course {
 
@@ -8,30 +10,10 @@ public class Course {
 	private int nCredits;
 	private int availableSpaces;
 	private boolean active;
-	private Student[] students;
+	private ArrayList<Student> students;
 	private int idTeacher;
 	
 	public Course() {
-	}
-
-	public static Course[] getCoursesAttended(int studentId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static void setCoursesAttended(int studentId, Course[] coursesAttended) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public static Course[] getCurrentCourses(int studentId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static void setCurrentCourses(int studentId, Course[] currentCourses) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public int getId() {
@@ -82,11 +64,11 @@ public class Course {
 		this.active = active;
 	}
 
-	public Student[] getStudents() {
+	public ArrayList<Student> getStudents() {
 		return students;
 	}
 
-	public void setStudents(Student[] students) {
+	public void setStudents(ArrayList<Student> students) {
 		this.students = students;
 	}
 

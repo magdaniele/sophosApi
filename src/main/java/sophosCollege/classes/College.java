@@ -1,4 +1,4 @@
-package sophosCollege;
+package sophosCollege.classes;
 
 
 public class College {
